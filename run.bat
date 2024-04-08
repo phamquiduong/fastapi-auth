@@ -2,6 +2,9 @@
 REM Install all python packages
 pip install -r requirements.txt
 
+REM Run all migration tasks
+alembic upgrade head
+
 REM Change directory to the "src" folder
 cd /d "src"
 
