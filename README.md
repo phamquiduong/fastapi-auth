@@ -11,6 +11,9 @@ Python 3.11 <br> [Official Website](https://www.python.org/downloads/release/pyt
 <br>
 
 # Build server
+> Note: In windows OS, you can run `run.bat` file for automatic build and run server
+
+
 ### Install the python package
 ```bash
 pip install -r requirements.txt
@@ -36,7 +39,6 @@ uvicorn main:app
 > **Note:**
 > * Add flag `--reload` to reload the server after change code
 > * Add flag `--port` to setup port number. Example: `--port 80`
-
 
 <br>
 
