@@ -1,0 +1,1 @@
+ADMINISTRATOR_GROUP_NAME = 'Administrator'
