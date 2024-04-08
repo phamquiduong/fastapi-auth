@@ -1,0 +1,5 @@
+# Database file
+db.sqlite
+
+# Pycache
+__pycache__/
