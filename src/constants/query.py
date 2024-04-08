@@ -1,0 +1,1 @@
+QUERY_LIMIT = 10

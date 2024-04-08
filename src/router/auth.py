@@ -33,7 +33,8 @@ def register(
 
     user_db = create_user(db, user_create) if is_exists_user(db) else create_superuser(db, user_create)
     return User(
-        email=user_db.email,  # type:ignore
+        id=user_db.id,          # type:ignore
+        email=user_db.email,    # type:ignore
         group=user_db.group
     )
 

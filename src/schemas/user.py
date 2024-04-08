@@ -16,6 +16,7 @@ class UserLogin(UserBase):
 
 
 class User(UserBase):
+    id: int
     group: Group | None = None
 
     class Config:

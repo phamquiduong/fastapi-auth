@@ -4,8 +4,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 
+from constants.group_model import ADMINISTRATOR_GROUP_NAME
 from database import SessionLocal
 from helpers.token import get_current_user as get_current_user_from_token
+from models.user import User as UserModel
+from services.group import get_or_create_group
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
@@ -42,3 +45,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         raise credentials_exception
 
     return user
+
+
+async def get_current_superuser(current_user: Annotated[UserModel, Depends(get_current_user)]):
+    db = SessionLocal()
+    admin_group = get_or_create_group(db, name=ADMINISTRATOR_GROUP_NAME)
+    if current_user.group is None or current_user.group.id != admin_group.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not administrator")
+    return current_user

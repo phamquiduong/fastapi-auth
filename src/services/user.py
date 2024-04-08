@@ -2,10 +2,24 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from constants.group_model import ADMINISTRATOR_GROUP_NAME
+from constants.query import QUERY_LIMIT
 from helpers.password import get_password_hash, verify_password
 from models import User as UserModel
 from schemas import UserCreate
 from services.group import get_or_create_group
+
+
+def get_user(db: Session, user_id: int):
+    """Get user by user id
+
+    Args:
+        db (Session): Database session
+        email (str): User id
+
+    Returns:
+        UserModel: current user
+    """
+    return db.query(UserModel).filter(UserModel.id == user_id).first()
 
 
 def get_user_by_email(db: Session, email: str):
@@ -21,13 +35,13 @@ def get_user_by_email(db: Session, email: str):
     return db.query(UserModel).filter(UserModel.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(db: Session, skip: int = 0, limit: int = QUERY_LIMIT):
     """Get list of users
 
     Args:
         db (Session): Database session
         skip (int, optional): Skip. Defaults to 0.
-        limit (int, optional): Limit. Defaults to 100.
+        limit (int, optional): Limit. Defaults to constants.query.QUERY_LIMIT.
 
     Returns:
         list[UserModel]: List of users
