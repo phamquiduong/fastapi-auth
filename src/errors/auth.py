@@ -9,12 +9,14 @@ AUTH_ERROR_HEADERS = {"WWW-Authenticate": "Bearer"}
 
 class AuthError(Enum):
     AUTH_400_001 = APIException(status_code=status.HTTP_400_BAD_REQUEST,
-                                error_code='AUTH-400-001', message='Email does not exist')
+                                error_code='AUTH-400-001', message='Email does not exist',
+                                error_fields={'email': 'Email does not exist'})
     AUTH_400_002 = APIException(status_code=status.HTTP_400_BAD_REQUEST,
-                                error_code='AUTH-400-002', message='Password incorrect')
+                                error_code='AUTH-400-002', message='Password incorrect',
+                                error_fields={'password': 'Password incorrect'})
 
     AUTH_401_001 = APIException(status_code=status.HTTP_401_UNAUTHORIZED, headers=AUTH_ERROR_HEADERS,
-                                error_code='AUTH-401-001', message='Expired signature')
+                                error_code='AUTH-401-001', message='Expired token')
     AUTH_401_002 = APIException(status_code=status.HTTP_401_UNAUTHORIZED, headers=AUTH_ERROR_HEADERS,
                                 error_code='AUTH-401-002', message='Invalid signature')
 
@@ -25,4 +27,5 @@ class AuthError(Enum):
                                 error_code='AUTH-404-001', message='User does not exist')
 
     AUTH_409_001 = APIException(status_code=status.HTTP_409_CONFLICT,
-                                error_code='AUTH-409-001', message='User already registered')
+                                error_code='AUTH-409-001', message='User already registered',
+                                error_fields={'email': 'Email already registered'})

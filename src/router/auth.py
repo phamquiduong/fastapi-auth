@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from dependencies.db import get_db
 from errors.auth import AuthError
 from helpers.token import create_access_token
-from schemas import User, UserCreate, UserLogin
+from schemas import ErrorSchema, User, UserCreate, UserLogin
 from schemas.token import Token
 from services.user import authenticate_user, create_superuser, create_user, get_user_by_email, is_exists_user
 
@@ -24,7 +24,12 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.post('/register', response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post('/register', response_model=User, status_code=status.HTTP_201_CREATED,
+             responses={
+                 409: {'model': ErrorSchema},
+                 422: {'model': ErrorSchema},
+                 500: {'model': ErrorSchema},
+             })
 def register(
     user_create: UserCreate,
     db: Session = Depends(get_db)
@@ -40,7 +45,12 @@ def register(
     )
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=Token,
+             responses={
+                 400: {'model': ErrorSchema},
+                 422: {'model': ErrorSchema},
+                 500: {'model': ErrorSchema},
+             })
 async def login(
     user_login: UserLogin = Body(...),
     db: Session = Depends(get_db)

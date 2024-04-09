@@ -21,8 +21,9 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token (Annotated[str, Depends): token auth from oauth2_scheme
 
     Raises:
-        credentials_exception: Token is invalid or expired
-        credentials_exception: User does not exist
+        AuthError.AUTH_401_001.value: Expired token
+        AuthError.AUTH_401_002.value: Invalid signature
+        AuthError.AUTH_404_001.value: User does not exist
 
     Returns:
         UserModel: Current user

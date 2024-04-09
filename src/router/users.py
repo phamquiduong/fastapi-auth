@@ -8,14 +8,20 @@ from constants.query import QUERY_LIMIT
 from dependencies.db import get_db
 from dependencies.user import get_current_superuser, get_current_user
 from errors.users import UsersError
-from schemas import User
+from schemas import ErrorSchema, User
 from services.group import get_or_create_group
 from services.user import get_user, get_users
 
 router = APIRouter(prefix='/users', tags=['Users'])
 
 
-@router.get('', response_model=list[User])
+@router.get('', response_model=list[User],
+            responses={401: {'model': ErrorSchema},
+                       404: {'model': ErrorSchema},
+                       403: {'model': ErrorSchema},
+                       422: {'model': ErrorSchema},
+                       500: {'model': ErrorSchema},
+                       })
 def get_user_list(
     _: Annotated[User, Depends(get_current_superuser)],
     skip: int = Query(0),
@@ -25,7 +31,12 @@ def get_user_list(
     return get_users(db, skip=skip, limit=limit)
 
 
-@router.get('/me', response_model=User)
+@router.get('/me', response_model=User,
+            responses={401: {'model': ErrorSchema},
+                       404: {'model': ErrorSchema},
+                       422: {'model': ErrorSchema},
+                       500: {'model': ErrorSchema},
+                       })
 def get_current_user_info(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
@@ -36,7 +47,13 @@ def get_current_user_info(
     )
 
 
-@router.get('/{user_id}', response_model=User)
+@router.get('/{user_id}', response_model=User,
+            responses={401: {'model': ErrorSchema},
+                       404: {'model': ErrorSchema},
+                       403: {'model': ErrorSchema},
+                       422: {'model': ErrorSchema},
+                       500: {'model': ErrorSchema},
+                       })
 def get_user_info_by_id(
     current_user: Annotated[User, Depends(get_current_user)],
     user_id: int,
