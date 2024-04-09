@@ -1,0 +1,41 @@
+version: "2.3"
+services:
+  # Nginx server
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - ${NGINX_PORT}:80
+    volumes:
+      - ./nginx/config:/etc/nginx
+      - ./nginx/log/:/var/log/nginx/
+    command: /tmp/run_nginx.sh
+    environment:
+      - DOLLAR=$$
+    env_file:
+      - ./.env
+    depends_on:
+      - fastapi
+    restart: always
+
+  # FastAPI server
+  fastapi:
+    build:
+      context: ../
+      dockerfile: docker/fastapi/Dockerfile
+    expose:
+      - ${FASTAPI_PORT}
+    volumes:
+      - ../src:/src
+      - ../database:/database
+      - ../migrations:/migrations
+      - ../alembic.ini:/alembic.ini
+    command: bash -c "alembic upgrade head &&
+                      cd src &&
+                      uvicorn main:app --host 0.0.0.0 --port ${FASTAPI_PORT} --reload"
+    restart: always
+networks:
+  default:
+    external: true
+    name: ${COMPOSE_PROJECT_NAME}_network

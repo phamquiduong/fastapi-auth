@@ -1,8 +1,16 @@
 # Database file
-db.sqlite
+database/
 
 # Pycache
 __pycache__/
 
+# Nginx configuration generator file
+docker/nginx/config/nginx.conf
+
+# Nginx log folder
+docker/nginx/log
+
 # Config file
 config.py
+# Environment file
+.env

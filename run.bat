@@ -4,6 +4,7 @@ pip install -r requirements.txt
 
 
 REM Run all migration tasks
+mkdir database
 alembic upgrade head
 
 

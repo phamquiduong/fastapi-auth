@@ -1,0 +1,101 @@
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /var/run/nginx.pid;
+
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    proxy_read_timeout 300;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    map ${DOLLAR}request_body ${DOLLAR}filtered_request_body {
+       default ${DOLLAR}request_body ;
+       ~(.*)password=[^&]*(.*)  ${DOLLAR}1password=[FILTERED]${DOLLAR}2 ;
+       ~(.*)password1=[^&]*(.*) ${DOLLAR}1password1=[FILTERED] ;
+       ~(.*)password2=[^&]*(.*) ${DOLLAR}1password2=[FILTERED] ;
+    }
+    log_format   main '${DOLLAR}remote_addr - ${DOLLAR}remote_user [${DOLLAR}time_local]  ${DOLLAR}status '
+        '"${DOLLAR}request" ${DOLLAR}body_bytes_sent "${DOLLAR}http_referer" '
+        '"${DOLLAR}http_user_agent" "${DOLLAR}http_x_forwarded_for"';
+    access_log  /var/log/nginx/access.log  main;
+    
+    log_format ${COMPOSE_PROJECT_NAME}-poc-info "${DOLLAR}time_local \t ${DOLLAR}remote_addr \t ${DOLLAR}request \t "
+                         "${DOLLAR}http_referer \t ${DOLLAR}cookie_ACCOUNT_TYPE \t ${DOLLAR}filtered_request_body";
+    access_log  /var/log/nginx/${COMPOSE_PROJECT_NAME}-poc-access.log ${COMPOSE_PROJECT_NAME}-poc-info;
+
+    include /etc/nginx/conf.d/*.conf;
+
+    index   index.html index.htm;
+
+    upstream python_server {
+        server fastapi:${FASTAPI_PORT} fail_timeout=0;
+    }
+
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  localhost;
+        client_max_body_size    5M;
+        add_header Cache-Control no-cache;
+        sendfile            off;
+        etag                off;
+        if_modified_since   off;
+
+        gzip on;
+        gzip_proxied    no-cache no-store private expired auth;
+        gzip_min_length 20;
+        gzip_types      text/plain
+                        text/xml
+                        text/css
+                        application/javascript
+                        application/json
+                        application/font-woff
+                        application/x-font-ttf
+                        application/vnd.ms-fontobject
+                        image/svg+xml;
+
+        include /etc/nginx/default.d/*.conf;
+
+        location @proxy_to_python {
+            proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
+            proxy_set_header Host ${DOLLAR}http_host;
+            proxy_set_header X-Real-IP ${DOLLAR}remote_addr;
+            proxy_redirect off;
+            proxy_pass http://python_server;
+        }
+
+        location /static/ {
+            alias /opt/apps/static/;
+        }
+
+        location /healthchecks.html {
+               empty_gif;
+               access_log off;
+               break;
+        }
+
+        location / {
+          try_files ${DOLLAR}uri @proxy_to_python;
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+}
