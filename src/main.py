@@ -1,5 +1,5 @@
 from fastapi import FastAPI, status
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import HTTPException, RequestValidationError
 
 from config import APP_TITLE, APP_VERSION
 from exceptions import APIException
@@ -41,4 +41,23 @@ async def request_validation_error_handler(_, exc: RequestValidationError):
         error_code='ERR-422-000',
         message='Request validation error',
         error_fields=error_fields
+    ).get_response()
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(_, exc: HTTPException):
+    return APIException(
+        status_code=exc.status_code,
+        error_code=f'ERR-{exc.status_code}-000',
+        message=exc.detail,
+        headers=exc.headers,
+    ).get_response()
+
+
+@app.exception_handler(Exception)
+async def exception_handler(_, exc: Exception):
+    return APIException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        error_code='ERR-500-000',
+        message=str(exc),
     ).get_response()
