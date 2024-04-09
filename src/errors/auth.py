@@ -24,5 +24,5 @@ class AuthError(Enum):
     AUTH_404_001 = APIException(status_code=status.HTTP_404_NOT_FOUND, headers=AUTH_ERROR_HEADERS,
                                 error_code='AUTH-404-001', message='User does not exist')
 
-    AUTH_409_001 = APIException(status_code=status.HTTP_409_FORBIDDEN,
+    AUTH_409_001 = APIException(status_code=status.HTTP_409_CONFLICT,
                                 error_code='AUTH-409-001', message='User already registered')
