@@ -1,8 +1,8 @@
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from constants.group_model import ADMINISTRATOR_GROUP_NAME
 from constants.query import QUERY_LIMIT
+from errors.auth import AuthError
 from helpers.password import get_password_hash, verify_password
 from models import User as UserModel
 from schemas import UserCreate
@@ -112,19 +112,12 @@ def authenticate_user(db: Session, email: str, password: str):
     Returns:
         UserModel: current user authenticated
     """
-    authenticate_exception = HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
     user_db = get_user_by_email(db, email)
 
     if user_db is None:
-        authenticate_exception.detail = 'Email does not exist'
-        raise authenticate_exception
+        raise AuthError.AUTH_400_001.value
 
     if not verify_password(plain_password=password, hashed_password=user_db.password):  # type: ignore
-        authenticate_exception.detail = 'Password incorrect'
-        raise authenticate_exception
+        raise AuthError.AUTH_400_002.value
 
     return user_db

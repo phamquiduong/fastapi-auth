@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from dependencies.db import get_db
+from errors.auth import AuthError
 from helpers.token import create_access_token
 from schemas import User, UserCreate, UserLogin
 from schemas.token import Token
@@ -29,7 +30,7 @@ def register(
     db: Session = Depends(get_db)
 ):
     if get_user_by_email(db, email=user_create.email) is not None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='User already registered')
+        raise AuthError.AUTH_409_001.value
 
     user_db = create_user(db, user_create) if is_exists_user(db) else create_superuser(db, user_create)
     return User(

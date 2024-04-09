@@ -1,12 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from constants.group_model import ADMINISTRATOR_GROUP_NAME
 from constants.query import QUERY_LIMIT
 from dependencies.db import get_db
 from dependencies.user import get_current_superuser, get_current_user
+from errors.users import UsersError
 from schemas import User
 from services.group import get_or_create_group
 from services.user import get_user, get_users
@@ -43,18 +44,12 @@ def get_user_info_by_id(
 ):
     admin_group = get_or_create_group(db, name=ADMINISTRATOR_GROUP_NAME)
     if current_user.id != user_id and (current_user.group is None or current_user.group.id != admin_group.id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You cannot get other user information when you are not an admin."
-        )
+        raise UsersError.USERS_403_001.value
 
     user_db = get_user(db, user_id=user_id)
 
     if user_db is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'User with id {user_id} does not exist'
-        )
+        raise UsersError.USERS_404_001.value
 
     return User(
         id=user_db.id,          # type:ignore
