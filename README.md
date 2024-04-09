@@ -14,6 +14,12 @@ Python 3.11 <br> [Official Website](https://www.python.org/downloads/release/pyt
 > Note: In windows OS, you can run `run.bat` file for automatic build and run server
 
 
+### Create config file
+```bash
+cp config.example.py config.py
+```
+
+
 ### Install the python package
 ```bash
 pip install -r requirements.txt
