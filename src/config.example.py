@@ -1,5 +1,9 @@
 from datetime import timedelta
 
+# App Config
+APP_TITLE = 'FastAPI Authentication Application'
+APP_VERSION = '1.0.0'
+
 # Using SQLite database. Path ../db.sqlite
 SQLALCHEMY_DATABASE_URL = "sqlite:///../db.sqlite"
 
