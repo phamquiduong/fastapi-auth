@@ -3,3 +3,6 @@ db.sqlite
 
 # Pycache
 __pycache__/
+
+# Config file
+config.py
