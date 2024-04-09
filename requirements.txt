@@ -1,23 +1,23 @@
 # Migrations
-alembic
+alembic==1.13.1
 
 # SQLAlchemy
-SQLAlchemy
+SQLAlchemy==2.0.29
 
 # FastAPI
-fastapi
+fastapi==0.110.1
 
 # Uvicorn
-uvicorn
+uvicorn==0.29.0
 
 # JWT
-python-jose[cryptography]
+python-jose[cryptography]==3.3.0
 
 # Bcrypt
-passlib[bcrypt]
+passlib[bcrypt]==1.7.4
 
 # Email validation
-pydantic[email]
+pydantic[email]==2.6.4
 
 # Fastapi oathu2 form
-python-multipart
+python-multipart==0.0.9
