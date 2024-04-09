@@ -31,19 +31,6 @@ class APIException(Exception):
             error_fields=error_fields
         )
 
-    def set(self,
-            status_code: int | None = None,
-            error_code: str | None = None,
-            message: str | None = None,
-            error_fields: dict[str, str] | None = None,
-            headers: dict[str, str] | None = None):
-        self.status_code = status_code if status_code is not None else self.status_code
-        self.error_code = error_code if error_code is not None else self.error_code
-        self.message = message if message is not None else self.message
-        self.error_fields = error_fields if error_fields is not None else self.error_fields
-        self.headers = headers if headers is not None else self.headers
-        return self
-
     def get_response(self):
         return JSONResponse(content=self.dump().model_dump(exclude_none=True),
                             status_code=self.status_code,
