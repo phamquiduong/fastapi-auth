@@ -3,6 +3,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 
 from config import APP_TITLE, APP_VERSION
 from exceptions import APIException
+from logger import logger
 from router import auth_router, users_router
 
 app = FastAPI(
@@ -61,3 +62,6 @@ async def exception_handler(_, exc: Exception):
         error_code='ERR-500-000',
         message=str(exc),
     ).get_response()
+
+
+logger.info('Server start successful')
