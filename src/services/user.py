@@ -35,7 +35,7 @@ def get_user_by_email(db: Session, email: str):
     return db.query(UserModel).filter(UserModel.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = QUERY_LIMIT):
+def get_users(db: Session, skip: int = 0, limit: int = QUERY_LIMIT, group_id: int | None = None):
     """Get list of users
 
     Args:
@@ -46,7 +46,12 @@ def get_users(db: Session, skip: int = 0, limit: int = QUERY_LIMIT):
     Returns:
         list[UserModel]: List of users
     """
-    return db.query(UserModel).offset(skip).limit(limit).all()
+    users_list_query = db.query(UserModel)
+
+    if group_id is not None:
+        users_list_query = users_list_query.filter(UserModel.group_id == group_id)
+
+    return users_list_query.offset(skip).limit(limit).all()
 
 
 def is_exists_user(db: Session):

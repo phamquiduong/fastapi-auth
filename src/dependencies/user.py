@@ -8,7 +8,7 @@ from constants.group_model import ADMINISTRATOR_GROUP_NAME
 from database import SessionLocal
 from errors.auth import AuthError
 from helpers.token import get_current_user as get_current_user_from_token
-from models.user import User as UserModel
+from models import User as UserModel
 from services.group import get_or_create_group
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")

@@ -7,8 +7,7 @@ from sqlalchemy.orm import Session
 from dependencies.db import get_db
 from errors.auth import AuthError
 from helpers.token import create_access_token
-from schemas import ErrorSchema, User, UserCreate, UserLogin
-from schemas.token import Token
+from schemas import ErrorSchema, Token, User, UserCreate, UserLogin
 from services.user import authenticate_user, create_superuser, create_user, get_user_by_email, is_exists_user
 
 router = APIRouter(prefix='/auth', tags=['Authentication'])
