@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from constants.query import QUERY_LIMIT
 from models import Group as GroupModel
 
 
@@ -14,6 +15,20 @@ def get_group(db: Session, group_id: int):
         GroupModel: Group By Id provided
     """
     return db.query(GroupModel).filter(GroupModel.id == group_id).first()
+
+
+def get_groups(db: Session, skip: int = 0, limit: int = QUERY_LIMIT):
+    """Get list of groups
+
+    Args:
+        db (Session): Database session
+        skip (int, optional): Skip. Defaults to 0.
+        limit (int, optional): Limit. Defaults to constants.query.QUERY_LIMIT.
+
+    Returns:
+        list[UserModel]: List of groups
+    """
+    return db.query(GroupModel).offset(skip).limit(limit).all()
 
 
 def get_group_by_name(db: Session, name: str):

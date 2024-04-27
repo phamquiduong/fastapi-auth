@@ -4,8 +4,9 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from config import APP_TITLE, APP_VERSION
 from exceptions import APIException
 from logger import logger
-from router import auth_router, users_router
+from router import auth_router, groups_router, users_router
 
+# FastAPI application
 app = FastAPI(
     docs_url='/',
     title=APP_TITLE,
@@ -17,8 +18,10 @@ app = FastAPI(
     }
 )
 
+# App routes
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(groups_router)
 
 
 # App custom error handlers
