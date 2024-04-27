@@ -8,6 +8,7 @@ from constants.query import QUERY_LIMIT
 from dependencies.db import get_db
 from dependencies.user import get_current_superuser, get_current_user
 from errors.users import UsersError
+from models import User as UserModel
 from schemas import ErrorSchema, User
 from services.group import get_or_create_group
 from services.user import get_user, get_users
@@ -23,7 +24,7 @@ router = APIRouter(prefix='/users', tags=['Users'])
                        500: {'model': ErrorSchema},
                        })
 def get_user_list(
-    _: Annotated[User, Depends(get_current_superuser)],
+    _: Annotated[UserModel, Depends(get_current_superuser)],
     skip: int = Query(0),
     limit: int = Query(QUERY_LIMIT),
     db: Session = Depends(get_db)
@@ -38,11 +39,11 @@ def get_user_list(
                        500: {'model': ErrorSchema},
                        })
 def get_current_user_info(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[UserModel, Depends(get_current_user)]
 ):
     return User(
-        id=current_user.id,
-        email=current_user.email,
+        id=current_user.id,         # type: ignore
+        email=current_user.email,   # type: ignore
         group=current_user.group
     )
 
@@ -55,12 +56,12 @@ def get_current_user_info(
                        500: {'model': ErrorSchema},
                        })
 def get_user_info_by_id(
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[UserModel, Depends(get_current_user)],
     user_id: int,
     db: Session = Depends(get_db)
 ):
     admin_group = get_or_create_group(db, name=ADMINISTRATOR_GROUP_NAME)
-    if current_user.id != user_id and (current_user.group is None or current_user.group.id != admin_group.id):
+    if current_user.id != user_id and (current_user.group is None or current_user.group.id != admin_group.id):   # type: ignore
         raise UsersError.USERS_403_001.value
 
     user_db = get_user(db, user_id=user_id)
