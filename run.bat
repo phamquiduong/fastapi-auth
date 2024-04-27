@@ -30,4 +30,4 @@ if "%PORT%"=="" set PORT=80
 
 
 REM Run the FastAPI app using uvicorn, checking for PORT value
-uvicorn main:app --host 0.0.0.0 --port %PORT% --reload
+python -m uvicorn main:app --host 0.0.0.0 --port %PORT% --reload
